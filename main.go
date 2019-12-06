@@ -1,8 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/gocolly/colly"
 	_ "github.com/gocolly/colly"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"net/url"
 )
 
@@ -18,7 +23,7 @@ func build_url() *url.URL {
 	baseurl := "https://eg.hm.com/en/views/ajax"
 
 	u, _ := url.Parse(baseurl)
-	fmt.Println("original:", u)
+	//fmt.Println("original:", u)
 
 	q, _ := url.ParseQuery(u.RawQuery)
 
@@ -36,30 +41,68 @@ func build_url() *url.URL {
 	}
 
 	u.RawQuery = q.Encode()
+	//fmt.Println("modified:", u)
+
 	return u
 }
 
+type HMresponse struct {
+	Command  string   `json:"command"`
+	Method   string   `json:"method"`
+	Selector string   `json:"selector"`
+	Data     string   `json:"data"`
+	Args     []string `json:"args"`
+}
+
+func build_colly() *colly.Collector {
+	c := colly.NewCollector()
+
+	div_id := ".c-products__item"
+	c.OnHTML(div_id, func(e *colly.HTMLElement) {
+		fmt.Println(e.Index)
+	})
+
+	c.OnRequest(func(r *colly.Request) {
+	})
+
+	return c
+}
+
+func get_json(url *url.URL) string {
+	resp, err := http.Get(url.String())
+	if err != nil {
+		log.Println(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+
+	s := string(body)
+
+	return s
+}
+
+func decode_json(data string) (string, error) {
+	var responses []HMresponse
+	if err := json.Unmarshal([]byte(data), &responses); err != nil {
+		fmt.Printf("Error whilde decoding %v\n", err)
+		return "", err
+	}
+
+	for _, element := range responses {
+		if element.Command == "insert" {
+			return element.Data, nil
+		}
+	}
+
+	return "", nil
+}
 func main() {
+	requestUrl := build_url()
+	rawJson := get_json(requestUrl)
+	requestData, err := decode_json(rawJson)
+	if err != nil {
+		log.Println(err)
+	}
 
-	fmt.Println("modified:", u)
-
-	//fmt.Println(encode_url(typeTops))
-	//c := colly.NewCollector()
-	//
-	////// Find and visit all links
-	////c.OnHTML("div", func(e *colly.HTMLElement) {
-	////	e.Request.Visit(e.Attr("href"))
-	////})
-	//
-	//div_id := ".c-products__item"
-	//c.OnHTML(div_id, func(e *colly.HTMLElement) {
-	//	fmt.Println(e.Index)
-	//})
-	//
-	//c.OnRequest(func(r *colly.Request) {
-	//	fmt.Println("Visiting", r.URL)
-	//})
-	//
-	//url := "https://eg.hm.com/en/shop-ladies/new-arrivals/clothes/"
-	//c.Visit(url)
+	fmt.Println(requestData)
 }
