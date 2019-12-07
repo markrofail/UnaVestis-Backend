@@ -5,11 +5,19 @@ import (
 	"github.com/markrofail/fashion_scraping_api/helpers"
 	"log"
 	"regexp"
+	"strings"
 )
 
 func GetPage(kind string, itemType string) string {
 	baseUrl := "https://eg.hm.com/en"
-	builtUrl := fmt.Sprintf("%s/shop-%s/shop-product/%s/", baseUrl, kind, itemType)
+
+	processedKind := strings.ToLower(kind)
+
+	processedItem := strings.ToLower(itemType)
+	processedItem = strings.Replace(processedItem, " & ", "-", -1)
+	processedItem = strings.Replace(processedItem, " ", "-", -1)
+
+	builtUrl := fmt.Sprintf("%s/shop-%s/shop-product/%s/", baseUrl, processedKind, processedItem)
 	return builtUrl
 }
 

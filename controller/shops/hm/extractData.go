@@ -1,11 +1,11 @@
-package main
+package hm
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
-	_ "github.com/gocolly/colly"
+	"github.com/markrofail/fashion_scraping_api/models"
 	"golang.org/x/net/html"
 	"io/ioutil"
 	"log"
@@ -14,21 +14,17 @@ import (
 	"strings"
 )
 
-const typeTops string = "/en/shop-ladies/tops"
+func buildUrl(kind string, itemType string) *url.URL {
+	baseUrl := "https://eg.hm.com/en/views/ajax"
 
-func buildUrl() *url.URL {
-	baseurl := "https://eg.hm.com/en/views/ajax"
-
-	u, _ := url.Parse(baseurl)
-	//fmt.Println("original:", u)
-
+	u, _ := url.Parse(baseUrl)
 	q, _ := url.ParseQuery(u.RawQuery)
 
 	paramsMap := make(map[string]string)
 	paramsMap["view_name"] = "alshaya_product_list"
 	paramsMap["view_display_id"] = "block_1"
-	paramsMap["view_args"] = "65951"
-	paramsMap["view_path"] = "/en/shop-ladies/tops"
+	paramsMap["view_args"] = hm.GetViewArgs(kind, itemType)
+	//paramsMap["view_path"] = fmt.Sprintf("/en/shop-%s/tops", gender)
 	paramsMap["sort_by"] = "created"
 	paramsMap["sort_order"] = "DESC"
 	paramsMap["page"] = "1"
@@ -38,8 +34,6 @@ func buildUrl() *url.URL {
 	}
 
 	u.RawQuery = q.Encode()
-	//fmt.Println("modified:", u)
-
 	return u
 }
 
@@ -96,24 +90,25 @@ func extractData(data string) (string, error) {
 
 var colors = hm.GetAllColor()
 
-func isColor(word string) bool {
+func isColor(word string) string {
 	searchWord := strings.ToLower(word)
 	searchWord = strings.TrimSpace(searchWord)
 	//fmt.Println(searchWord)
 	for _, color := range colors {
 		if strings.HasPrefix(searchWord, color) || strings.HasSuffix(searchWord, color) {
-			return true
+			return color
 		}
 	}
-	return false
+	return ""
 }
 
 func extractColor(title string) string {
 	res1 := strings.Split(title, ".")[0]
 	res2 := strings.Split(res1, "-")
 	for _, element := range res2 {
-		if isColor(element) {
-			return element
+		result := isColor(element)
+		if result != "" {
+			return result
 		}
 	}
 
@@ -137,11 +132,11 @@ func getImages(selection *goquery.Selection) []string {
 	return imgArray
 }
 
-func getItems(data string) []Product {
+func getItems(data string) []models.Product {
 	htmlDoc, _ := html.Parse(strings.NewReader(data))
 	doc := goquery.NewDocumentFromNode(htmlDoc)
 
-	var productArr []Product
+	var productArr []models.Product
 	doc.Find(".c-products__item").Each(func(i int, s *goquery.Selection) {
 		product_name, _ := s.Find("article").Attr("gtm-name")
 		product_price, _ := s.Find("article").Attr("gtm-price")
@@ -149,13 +144,10 @@ func getItems(data string) []Product {
 		product_color = extractColor(product_color)
 		imgArray := getImages(s)
 
-		newProduct := Product{
+		newProduct := models.Product{
 			Name:   product_name,
 			Price:  product_price,
-			Type:   "",
 			Color:  product_color,
-			Gender: "",
-			Shop:   "",
 			Image:  imgArray,
 		}
 
@@ -168,20 +160,3 @@ func getItems(data string) []Product {
 	return productArr
 }
 
-func main() {
-	requestUrl := buildUrl()
-	rawJson := getJson(requestUrl)
-	requestData, err := extractData(rawJson)
-	if err != nil {
-		log.Println(err)
-	}
-
-	products := getItems(requestData)
-
-	jsonResponse, err := json.Marshal(products)
-	if err != nil {
-		log.Println(err)
-	}
-
-	fmt.Println(string(jsonResponse))
-}
