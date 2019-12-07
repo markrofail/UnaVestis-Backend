@@ -8,21 +8,21 @@ import (
 	"strings"
 )
 
-func GetPage(kind string, itemType string) string {
+func GetPage(productCategory string, itemType string) string {
 	baseURL := "https://eg.hm.com/en"
 
-	processedKind := strings.ToLower(kind)
+	processedCategory := strings.ToLower(productCategory)
 
 	processedItem := strings.ToLower(itemType)
 	processedItem = strings.Replace(processedItem, " & ", "-", -1)
 	processedItem = strings.Replace(processedItem, " ", "-", -1)
 
-	builtURL := fmt.Sprintf("%s/shop-%s/shop-product/%s/", baseURL, processedKind, processedItem)
+	builtURL := fmt.Sprintf("%s/shop-%s/shop-product/%s/", baseURL, processedCategory, processedItem)
 	return builtURL
 }
 
-func GetViewArgs(kind string, itemType string) string {
-	pageURL := GetPage(kind, itemType)
+func GetViewArgs(productCategory string, itemType string) string {
+	pageURL := GetPage(productCategory, itemType)
 
 	doc := helpers.GetResponse(pageURL)
 

@@ -36,9 +36,9 @@ func (dao *ProductDAO) Get(id uint) (*models.Product, error) {
 	return &product, nil
 }
 
-func (dao *ProductDAO) GetAll(kind string, productType string) (*[]models.Product, error) {
-	requestUrl := daos.BuildURL(kind, productType)
-	testPage := daos.GetPage(kind, productType)
+func (dao *ProductDAO) GetAll(productCategory string, productType string) (*[]models.Product, error) {
+	requestUrl := daos.BuildURL(productCategory, productType)
+	testPage := daos.GetPage(productCategory, productType)
 	fmt.Println(testPage)
 
 	rawJson := daos.GetJSON(requestUrl)
@@ -49,6 +49,6 @@ func (dao *ProductDAO) GetAll(kind string, productType string) (*[]models.Produc
 
 	products := daos.GetItems(requestData)
 
-	fmt.Println(kind, productType)
+	fmt.Println(productCategory, productType)
 	return &products, nil
 }

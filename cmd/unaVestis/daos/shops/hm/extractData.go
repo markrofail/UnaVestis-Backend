@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func BuildURL(kind string, itemType string) *url.URL {
+func BuildURL(productCategory string, itemType string) *url.URL {
 	baseURL := "https://eg.hm.com/en/views/ajax"
 
 	u, _ := url.Parse(baseURL)
@@ -22,7 +22,7 @@ func BuildURL(kind string, itemType string) *url.URL {
 	paramsMap := make(map[string]string)
 	paramsMap["view_name"] = "alshaya_product_list"
 	paramsMap["view_display_id"] = "block_1"
-	paramsMap["view_args"] = GetViewArgs(kind, itemType)
+	paramsMap["view_args"] = GetViewArgs(productCategory, itemType)
 	//paramsMap["view_path"] = fmt.Sprintf("/en/shop-%s/tops", gender)
 	paramsMap["sort_by"] = "created"
 	paramsMap["sort_order"] = "DESC"

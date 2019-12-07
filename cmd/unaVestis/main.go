@@ -44,6 +44,7 @@ func main() {
 	{
 		//v1.Use(auth())
 		v1.GET("/products", apis.GetProducts)
+		v1.GET("/categories", apis.GetCategories)
 		v1.GET("/", apis.HelloWorldHandler)
 	}
 

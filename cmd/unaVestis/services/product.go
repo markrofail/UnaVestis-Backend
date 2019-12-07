@@ -17,6 +17,6 @@ func NewProductService(dao productDAO) *ProductService {
 }
 
 // Get just retrieves user using User DAO, here can be additional logic for processing data retrieved by DAOs
-func (s *ProductService) GetAll(kind string, productType string) (*[]models.Product, error) {
-	return s.dao.GetAll(kind, productType)
+func (s *ProductService) GetAll(productCategory string, productType string) (*[]models.Product, error) {
+	return s.dao.GetAll(productCategory, productType)
 }

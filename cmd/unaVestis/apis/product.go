@@ -13,15 +13,15 @@ import (
 // @Produce json
 // @Param id path integer true "User ID"
 // @Success 200 {object} models.User
-// @Router /products/?kind={}&type={} [get]
+// @Router /products/?category={}&type={} [get]
 // @Security ApiKeyAuth
 func GetProducts(c *gin.Context) {
 	s := services.NewProductService(daos.NewProductDAO())
 
-	inputKind := c.Query("kind")
+	inputCategory := c.Query("category")
 	inputType := c.Query("type")
 
-	if products, err := s.GetAll(inputKind, inputType); err != nil {
+	if products, err := s.GetAll(inputCategory, inputType); err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Println(err)
 	} else {

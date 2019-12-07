@@ -9,3 +9,11 @@ type Product struct {
 	//Gender string   `json:"gender"`
 	//Shop   string   `json:"shop"`
 }
+
+type Category struct {
+	Name string `json:"name"`
+}
+
+type Type struct {
+	Name string `json:"name"`
+}
