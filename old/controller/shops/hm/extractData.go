@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gocolly/colly"
 	"github.com/markrofail/fashion_scraping_api/models"
 	"golang.org/x/net/html"
 	"io/ioutil"
@@ -14,16 +13,16 @@ import (
 	"strings"
 )
 
-func buildUrl(kind string, itemType string) *url.URL {
-	baseUrl := "https://eg.hm.com/en/views/ajax"
+func buildURL(kind string, itemType string) *url.URL {
+	baseURL := "https://eg.hm.com/en/views/ajax"
 
-	u, _ := url.Parse(baseUrl)
+	u, _ := url.Parse(baseURL)
 	q, _ := url.ParseQuery(u.RawQuery)
 
 	paramsMap := make(map[string]string)
 	paramsMap["view_name"] = "alshaya_product_list"
 	paramsMap["view_display_id"] = "block_1"
-	paramsMap["view_args"] = hm.GetViewArgs(kind, itemType)
+	paramsMap["view_args"] = GetViewArgs(kind, itemType)
 	//paramsMap["view_path"] = fmt.Sprintf("/en/shop-%s/tops", gender)
 	paramsMap["sort_by"] = "created"
 	paramsMap["sort_order"] = "DESC"
@@ -37,21 +36,7 @@ func buildUrl(kind string, itemType string) *url.URL {
 	return u
 }
 
-func build_colly() *colly.Collector {
-	c := colly.NewCollector()
-
-	div_id := ".c-products__item"
-	c.OnHTML(div_id, func(e *colly.HTMLElement) {
-		fmt.Println(e.Index)
-	})
-
-	c.OnRequest(func(r *colly.Request) {
-	})
-
-	return c
-}
-
-func getJson(url *url.URL) string {
+func getJSON(url *url.URL) string {
 	resp, err := http.Get(url.String())
 	if err != nil {
 		log.Println(err)
@@ -88,7 +73,7 @@ func extractData(data string) (string, error) {
 	return "", nil
 }
 
-var colors = hm.GetAllColor()
+var colors = GetAllColor()
 
 func isColor(word string) string {
 	searchWord := strings.ToLower(word)
@@ -138,25 +123,24 @@ func getItems(data string) []models.Product {
 
 	var productArr []models.Product
 	doc.Find(".c-products__item").Each(func(i int, s *goquery.Selection) {
-		product_name, _ := s.Find("article").Attr("gtm-name")
-		product_price, _ := s.Find("article").Attr("gtm-price")
-		product_color, _ := s.Find(".product-selected-url").Attr("data--original-url")
-		product_color = extractColor(product_color)
+		productName, _ := s.Find("article").Attr("gtm-name")
+		productPrice, _ := s.Find("article").Attr("gtm-price")
+		productColor, _ := s.Find(".product-selected-url").Attr("data--original-url")
+		productColor = extractColor(productColor)
 		imgArray := getImages(s)
 
 		newProduct := models.Product{
-			Name:   product_name,
-			Price:  product_price,
-			Color:  product_color,
-			Image:  imgArray,
+			Name:  productName,
+			Price: productPrice,
+			Color: productColor,
+			Image: imgArray,
 		}
 
 		productArr = append(productArr, newProduct)
-		fmt.Printf("Name: %s;\tColor: %s;\tPrice: %s\n", product_name, product_color, product_price)
+		fmt.Printf("Name: %s;\tColor: %s;\tPrice: %s\n", productName, productColor, productPrice)
 		fmt.Println(imgArray)
 		fmt.Println()
 	})
 
 	return productArr
 }
-

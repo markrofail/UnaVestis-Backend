@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-func GetResponse(pageUrl string) *goquery.Document {
-	resp, err := http.Get(pageUrl)
+func GetResponse(pageURL string) *goquery.Document {
+	resp, err := http.Get(pageURL)
 	if err != nil {
 		log.Fatalln(err)
 	}

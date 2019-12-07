@@ -9,7 +9,7 @@ import (
 )
 
 func GetPage(kind string, itemType string) string {
-	baseUrl := "https://eg.hm.com/en"
+	baseURL := "https://eg.hm.com/en"
 
 	processedKind := strings.ToLower(kind)
 
@@ -17,14 +17,14 @@ func GetPage(kind string, itemType string) string {
 	processedItem = strings.Replace(processedItem, " & ", "-", -1)
 	processedItem = strings.Replace(processedItem, " ", "-", -1)
 
-	builtUrl := fmt.Sprintf("%s/shop-%s/shop-product/%s/", baseUrl, processedKind, processedItem)
-	return builtUrl
+	builtURL := fmt.Sprintf("%s/shop-%s/shop-product/%s/", baseURL, processedKind, processedItem)
+	return builtURL
 }
 
 func GetViewArgs(kind string, itemType string) string {
-	pageUrl := GetPage(kind, itemType)
+	pageURL := GetPage(kind, itemType)
 
-	doc := helpers.GetResponse(pageUrl)
+	doc := helpers.GetResponse(pageURL)
 
 	link := doc.Find("link[rel=latest-version]")
 	viewArgsLink, _ := link.Attr("href")
