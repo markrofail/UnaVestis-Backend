@@ -34,20 +34,20 @@ paths:
   /users/{id}:
     get:
       parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             $ref: '#/definitions/models.User'
       security:
-      - ApiKeyAuth: []
+        - ApiKeyAuth: []
       summary: Retrieves user based on given ID
 securityDefinitions:
   ApiKeyAuth:

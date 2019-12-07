@@ -1,8 +1,8 @@
-package hm
+package daos
 
 import (
 	"fmt"
-	"github.com/markrofail/fashion_scraping_api/helpers"
+	"github.com/markrofail/fashion_scraping_api/cmd/unaVestis/daos/helpers"
 	"log"
 	"regexp"
 	"strings"

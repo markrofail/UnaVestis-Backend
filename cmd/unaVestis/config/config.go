@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 )
 
@@ -19,11 +18,11 @@ func LoadConfig(configPaths ...string) error {
 	v := viper.New()
 	v.SetConfigName("example")
 	v.SetConfigType("yaml")
-	v.SetEnvPrefix("blueprint")
+	v.SetEnvPrefix("unaVestis")
 	v.AutomaticEnv()
 
-	Config.DSN = v.Get("DSN").(string)
-	Config.ApiKey = v.Get("API_KEY").(string)
+	//Config.DSN = v.Get("DSN").(string)
+	//Config.ApiKey = v.Get("API_KEY").(string)
 	v.SetDefault("server_port", 1234)
 
 	for _, path := range configPaths {

@@ -1,10 +1,10 @@
-package hm
+package daos
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/markrofail/fashion_scraping_api/models"
+	"github.com/markrofail/fashion_scraping_api/cmd/unaVestis/models"
 	"golang.org/x/net/html"
 	"io/ioutil"
 	"log"
@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func buildURL(kind string, itemType string) *url.URL {
+func BuildURL(kind string, itemType string) *url.URL {
 	baseURL := "https://eg.hm.com/en/views/ajax"
 
 	u, _ := url.Parse(baseURL)
@@ -36,7 +36,7 @@ func buildURL(kind string, itemType string) *url.URL {
 	return u
 }
 
-func getJSON(url *url.URL) string {
+func GetJSON(url *url.URL) string {
 	resp, err := http.Get(url.String())
 	if err != nil {
 		log.Println(err)
@@ -57,7 +57,7 @@ type HMresponse struct {
 	Args     []string `json:"args"`
 }
 
-func extractData(data string) (string, error) {
+func ExtractData(data string) (string, error) {
 	var responses []HMresponse
 	if err := json.Unmarshal([]byte(data), &responses); err != nil {
 		fmt.Printf("Error whilde decoding %v\n", err)
@@ -75,7 +75,7 @@ func extractData(data string) (string, error) {
 
 var colors = GetAllColor()
 
-func isColor(word string) string {
+func IsColor(word string) string {
 	searchWord := strings.ToLower(word)
 	searchWord = strings.TrimSpace(searchWord)
 	//fmt.Println(searchWord)
@@ -87,11 +87,11 @@ func isColor(word string) string {
 	return ""
 }
 
-func extractColor(title string) string {
+func ExtractColor(title string) string {
 	res1 := strings.Split(title, ".")[0]
 	res2 := strings.Split(res1, "-")
 	for _, element := range res2 {
-		result := isColor(element)
+		result := IsColor(element)
 		if result != "" {
 			return result
 		}
@@ -100,7 +100,7 @@ func extractColor(title string) string {
 	return ""
 }
 
-func getImages(selection *goquery.Selection) []string {
+func GetImages(selection *goquery.Selection) []string {
 	var imgArray []string
 
 	images := selection.Find("img")
@@ -117,7 +117,7 @@ func getImages(selection *goquery.Selection) []string {
 	return imgArray
 }
 
-func getItems(data string) []models.Product {
+func GetItems(data string) []models.Product {
 	htmlDoc, _ := html.Parse(strings.NewReader(data))
 	doc := goquery.NewDocumentFromNode(htmlDoc)
 
@@ -126,8 +126,8 @@ func getItems(data string) []models.Product {
 		productName, _ := s.Find("article").Attr("gtm-name")
 		productPrice, _ := s.Find("article").Attr("gtm-price")
 		productColor, _ := s.Find(".product-selected-url").Attr("data--original-url")
-		productColor = extractColor(productColor)
-		imgArray := getImages(s)
+		productColor = ExtractColor(productColor)
+		imgArray := GetImages(s)
 
 		newProduct := models.Product{
 			Name:  productName,

@@ -1,9 +1,9 @@
-package hm
+package daos
 
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/markrofail/fashion_scraping_api/helpers"
+	"github.com/markrofail/fashion_scraping_api/cmd/unaVestis/daos/helpers"
 )
 
 var numericAlpha = map[int]string{

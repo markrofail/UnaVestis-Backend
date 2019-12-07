@@ -1,4 +1,4 @@
-package hm
+package daos
 
 import (
 	"github.com/PuerkitoBio/goquery"
