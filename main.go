@@ -94,21 +94,7 @@ func extractData(data string) (string, error) {
 	return "", nil
 }
 
-type Product struct {
-	Name   string   `json:"name"`
-	Price  string   `json:"price"`
-	Type   string   `json:"type"`
-	Color  string   `json:"color"`
-	Gender string   `json:"gender"`
-	Shop   string   `json:"shop"`
-	Image  []string `json:"image_url"`
-}
-
-var colors = []string{
-	"red", "orange", "yellow", "green", "maroon", "cyan", "brown", "magenta", "tan",
-	"blue", "purple", "indigo", "violet", "olive", "white", "gray", "grey", "beige",
-	"navy", "aquamarine", "turquoise", "silver", "pink", "black", "lime", "teal",
-}
+var colors = hm.GetAllColor()
 
 func isColor(word string) bool {
 	searchWord := strings.ToLower(word)
