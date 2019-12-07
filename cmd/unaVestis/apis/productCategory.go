@@ -11,10 +11,10 @@ import (
 func GetCategories(c *gin.Context) {
 	s := services.NewCategoryService(daos.NewCategoryDAO())
 
-	if products, err := s.GetAll(); err != nil {
+	if productCategories, err := s.GetAll(); err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Println(err)
 	} else {
-		c.JSON(http.StatusOK, products)
+		c.JSON(http.StatusOK, productCategories)
 	}
 }
